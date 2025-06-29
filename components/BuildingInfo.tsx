@@ -1,29 +1,32 @@
+// components/ui/BuildingInfo.tsx
 "use client";
 
+import React from "react";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"; // Ganti impor dari Sheet ke Dialog
 import { useMapStore } from "@/store/mapStore";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { BuildingProperties } from "@/types"; // Pastikan path ini benar
+import type { BuildingProperties } from "@/types";
 
+// Komponen InfoRow (tetap sama seperti kode Anda)
 interface InfoRowProps {
   label: string;
   value: string | number | undefined | null;
 }
 
 const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => (
-  <div className="flex justify-between items-center border-b border-white/10 py-3">
-    <p className="text-sm text-inherit">{label}</p>
-    <p
-      className="text-sm font-semibold text-right pr-1 text-emerald-400"
-      style={{ textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
-    >
+  <div className="flex justify-between items-center border-b border-border/60 py-2.5">
+    {" "}
+    {/* Sedikit penyesuaian padding */}
+    <p className="text-sm text-muted-foreground">{label}</p>{" "}
+    {/* Ganti text-inherit ke text-muted-foreground untuk konsistensi */}
+    <p className="text-sm font-semibold text-right text-primary">
+      {" "}
+      {/* Ganti warna ke primary */}
       {value !== null && value !== undefined && String(value).trim() !== ""
         ? String(value)
         : "-"}
@@ -31,28 +34,26 @@ const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => (
   </div>
 );
 
-// Definisikan tipe untuk parameter 'val' pada formatter
-type FormatterValue = BuildingProperties[keyof BuildingProperties]; // Ini akan menjadi union dari semua tipe properti
+// Tipe formatter (tetap sama)
+type FormatterValue = BuildingProperties[keyof BuildingProperties];
 
-const BuildingInfo = () => {
+function BuildingInfo() {
   const { selectedFeature, setSelectedFeature } = useMapStore();
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-  const side = isDesktop ? "right" : "bottom";
-  const properties: BuildingProperties | undefined =
-    selectedFeature?.properties;
 
   const handleOpenChange = (isOpen: boolean) => {
+    // Jika dialog ditutup (misalnya dengan menekan Esc atau klik di luar),
+    // reset selectedFeature di store.
     if (!isOpen) {
       setSelectedFeature(null);
     }
   };
 
-  // Beri tipe yang lebih spesifik untuk 'val' di formatter
+  const properties = selectedFeature?.properties;
+
+  // Daftar properti yang akan ditampilkan (tetap sama)
   const displayableProperties: Array<{
     label: string;
     key: keyof BuildingProperties;
-    // 'val' sekarang akan mengambil tipe dari BuildingProperties berdasarkan 'key'
-    // Namun, untuk membuatnya lebih sederhana di sini, kita gunakan FormatterValue
     formatter?: (val: FormatterValue) => string | number;
   }> = [
     { label: "ID", key: "Id" },
@@ -65,54 +66,53 @@ const BuildingInfo = () => {
       label: "Luas Area (m²)",
       key: "Shape_Area",
       formatter: (val) => {
-        // Karena val bisa undefined (jika Shape_Area opsional), kita perlu menanganinya
         if (typeof val === "number") {
           return val.toFixed(2);
         }
-        return val !== undefined && val !== null ? String(val) : "-"; // Fallback jika bukan angka atau undefined/null
+        return val !== undefined && val !== null ? String(val) : "-";
       },
     },
   ];
 
   return (
-    <Sheet
-      open={!!selectedFeature}
-      onOpenChange={handleOpenChange}
-      modal={false}
-    >
-      <SheetContent side={side} className="w-full md:w-[400px] lg:w-[450px]">
-        <SheetHeader>
-          <SheetTitle>Detail Bangunan</SheetTitle>
-          <SheetDescription>
+    // Gunakan Dialog, bukan Sheet
+    <Dialog open={!!selectedFeature} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-md max-h-[80vh] flex flex-col">
+        {" "}
+        {/* Tambah flex-col */}
+        <DialogHeader>
+          <DialogTitle>Detail Bangunan</DialogTitle>
+          <DialogDescription>
             Informasi detail dari poligon yang dipilih.
-          </SheetDescription>
-        </SheetHeader>
-
-        {properties && (
-          <div className="grid gap-0 mt-4">
+          </DialogDescription>
+        </DialogHeader>
+        {properties ? (
+          // Tambahkan div dengan overflow agar konten bisa di-scroll jika panjang
+          <div className="flex-grow overflow-y-auto pr-3 -mr-2">
             {displayableProperties.map((propInfo) => {
               const valueFromProperties = properties[propInfo.key];
               const displayValue = propInfo.formatter
-                ? propInfo.formatter(valueFromProperties) // Sekarang valueFromProperties memiliki tipe yang lebih baik
+                ? propInfo.formatter(valueFromProperties)
                 : valueFromProperties;
               return (
                 <InfoRow
                   key={propInfo.key}
                   label={propInfo.label}
-                  value={displayValue} // displayValue sekarang adalah string atau number
+                  value={displayValue}
                 />
               );
             })}
           </div>
+        ) : (
+          <div className="flex-grow flex items-center justify-center">
+            <p className="text-sm text-muted-foreground">
+              Properti tidak ditemukan untuk fitur ini.
+            </p>
+          </div>
         )}
-        {!properties && selectedFeature && (
-          <p className="mt-4 text-sm text-muted-foreground">
-            Properti tidak ditemukan untuk fitur ini.
-          </p>
-        )}
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
-};
+}
 
 export default BuildingInfo;

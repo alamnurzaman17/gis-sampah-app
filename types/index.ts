@@ -1,3 +1,4 @@
+// types/index.ts
 import {
   Feature as GeoJsonFeatureType,
   MultiPolygon,
@@ -6,14 +7,7 @@ import {
 } from "geojson";
 import { LatLngExpression } from "leaflet";
 
-// Tipe untuk basemap
-export interface BasemapConfig {
-  name: string;
-  url: string;
-  attribution: string;
-}
-
-// Definisikan semua properti yang MUNGKIN ada di data GeoJSON Anda
+// --- Tipe untuk Data Bangunan (Properties) ---
 export interface BuildingProperties {
   Id: number;
   Shape_Leng?: number;
@@ -23,25 +17,32 @@ export interface BuildingProperties {
   "Sampah Plastik (kg)"?: number;
   "Sampah Organik (kg)"?: number;
   "sampah Anorganik (kg)"?: number;
+  [key: string]: string | number | undefined | null;
 }
 
-// Tipe fitur spesifik Anda dengan geometri MultiPolygon
+// --- Tipe untuk Fitur GeoJSON ---
 export type AppSpecificBuildingFeature = GeoJsonFeatureType<
   MultiPolygon,
   BuildingProperties
 >;
-
-// Tipe koleksi fitur spesifik Anda
 export type AppFeatureCollection = GeoJsonFeatureCollectionType<
   MultiPolygon,
   BuildingProperties
 >;
+export type LeafletCompatibleBuildingFeature = GeoJsonFeatureType<
+  Geometry,
+  BuildingProperties
+>;
 
-// Tipe fitur generik untuk digunakan oleh callback Leaflet
-export type LeafletCompatibleBuildingFeature<G extends Geometry = Geometry> =
-  GeoJsonFeatureType<G, BuildingProperties>;
+// --- Tipe untuk Peta ---
+export interface BasemapConfig {
+  id: string;
+  name: string;
+  url: string;
+  attribution: string;
+  thumbnail: string;
+}
 
-// Tipe untuk jenis sampah yang bisa dipilih untuk visualisasi
 export type SampahType =
   | "Estimasi"
   | "Sampah Plastik (kg)"
@@ -51,32 +52,53 @@ export type SampahType =
 export interface LegendItem {
   color: string;
   label: string;
-  count?: number;
 }
 
-// --- Tipe untuk State Global (Zustand Store) ---
-export interface MapState {
+// --- Tipe untuk Hasil Geocoding Nominatim ---
+export interface GeocodingResult {
+  place_id: number;
+  licence: string;
+  osm_type: string;
+  osm_id: number;
+  boundingbox: string[];
+  lat: string;
+  lon: string;
+  display_name: string;
+  class: string;
+  type: string;
+  importance: number;
+  icon?: string;
+}
+
+//  TIPE UNTUK STATE GLOBAL (ZUSTAND STORE)
+export interface MapStoreState {
   // Data & Layer
-  map: L.Map | null; // Tipe Map dari Leaflet
-  isDataVisible: boolean;
-  geoJsonData: AppFeatureCollection | null; // Data utama yang mungkin difilter
-  allFeatures: AppSpecificBuildingFeature[]; // SEMUA fitur asli untuk reset/pencarian
+  isDataLayerVisible: boolean;
+  geoJsonData: AppFeatureCollection | null;
+  allFeatures: AppSpecificBuildingFeature[];
 
   // Kontrol Peta
   activeSampahType: SampahType;
-  selectedFeature: AppSpecificBuildingFeature | null; // Konsisten dengan tipe data utama
-  activeBasemap: BasemapConfig; // Ganti nama dari currentBasemap agar konsisten dengan setActiveBasemap
-  searchTerm: string; // Jika ingin input pencarian dikelola global
-  searchResultCenter: LatLngExpression | null; // Untuk flyTo hasil pencarian
+  selectedFeature: LeafletCompatibleBuildingFeature | null;
+  currentBasemap: BasemapConfig;
+  searchTerm: string;
+  searchResultCenter: LatLngExpression | null;
+
+  // <<< TAMBAHAN BARU >>>
+  geocodingSuggestions: GeocodingResult[]; // Untuk menyimpan saran autocomplete
+  isGeocodingLoading: boolean; // Untuk menampilkan indikator loading
 
   // Aksi (Metode untuk mengubah state)
-  setMap: (map: L.Map | null) => void;
-  setGeoJsonData: (data: AppFeatureCollection | null) => void; // Untuk data yang ditampilkan
-  setAllFeatures: (features: AppSpecificBuildingFeature[]) => void; // Untuk semua data asli
-  toggleDataVisibility: () => void;
+  setGeoJsonData: (data: AppFeatureCollection | null) => void;
+  setAllFeatures: (features: AppSpecificBuildingFeature[]) => void;
+  toggleDataLayerVisibility: () => void;
   setActiveSampahType: (type: SampahType) => void;
-  setSelectedFeature: (feature: AppSpecificBuildingFeature | null) => void;
-  setActiveBasemap: (basemap: BasemapConfig) => void;
-  setSearchTerm: (term: string) => void; // Jika ingin input pencarian dikelola global
+  setSelectedFeature: (
+    feature: LeafletCompatibleBuildingFeature | null
+  ) => void;
+  setCurrentBasemap: (basemap: BasemapConfig) => void;
+  setSearchTerm: (term: string) => void;
   setSearchResultCenter: (center: LatLngExpression | null) => void;
+  fetchGeocodingSuggestions: () => void; // Aksi baru untuk autocomplete
+  clearGeocodingSuggestions: () => void; // Aksi baru untuk membersihkan saran
 }

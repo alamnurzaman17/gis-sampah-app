@@ -1,54 +1,69 @@
+// store/mapStore.ts
 import { create } from "zustand";
-import { Map } from "leaflet";
-import {
-  BasemapConfig,
-  AppSpecificBuildingFeature, // Atau tipe fitur lain yang sesuai
-  SampahType, // Impor tipe SampahType
-} from "@/types"; // Sesuaikan path jika perlu
+import type { MapStoreState, GeocodingResult } from "@/types";
+import { initialBasemap } from "@/lib/mapUtils";
 
-export const basemapsData: { [key: string]: BasemapConfig } = {
-  light: {
-    name: "Light",
-    url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-    attribution:
-      '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
-  },
-  dark: {
-    name: "Dark",
-    url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-    attribution:
-      '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
-  },
-  satellite: {
-    name: "Satellite",
-    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    attribution: "Tiles © Esri",
-  },
-};
-
-interface MapState {
-  map: Map | null;
-  isDataVisible: boolean;
-  activeBasemap: BasemapConfig;
-  selectedFeature: AppSpecificBuildingFeature | null;
-  activeSampahType: SampahType; // <<-- TAMBAHKAN INI
-  setMap: (map: Map) => void;
-  toggleDataVisibility: () => void;
-  setActiveBasemap: (basemap: BasemapConfig) => void;
-  setSelectedFeature: (feature: AppSpecificBuildingFeature | null) => void;
-  setActiveSampahType: (type: SampahType) => void; // <<-- TAMBAHKAN INI
-}
-
-export const useMapStore = create<MapState>((set) => ({
-  map: null,
-  isDataVisible: true,
-  activeBasemap: basemapsData.light,
+export const useMapStore = create<MapStoreState>((set, get) => ({
+  // --- STATE ---
+  isDataLayerVisible: true,
+  geoJsonData: null,
+  allFeatures: [],
+  activeSampahType: "Sampah Plastik (kg)",
   selectedFeature: null,
-  activeSampahType: "Estimasi", // Nilai default untuk activeSampahType
-  setMap: (map) => set({ map }),
-  toggleDataVisibility: () =>
-    set((state) => ({ isDataVisible: !state.isDataVisible })),
-  setActiveBasemap: (basemap) => set({ activeBasemap: basemap }),
+  currentBasemap: initialBasemap,
+  searchTerm: "",
+  searchResultCenter: null,
+  geocodingSuggestions: [], // <<< STATE BARU
+  isGeocodingLoading: false, // <<< STATE BARU
+
+  // --- AKSI ---
+  setGeoJsonData: (data) => set({ geoJsonData: data }),
+  setAllFeatures: (features) => set({ allFeatures: features }),
+  toggleDataLayerVisibility: () =>
+    set((state) => ({ isDataLayerVisible: !state.isDataLayerVisible })),
+  setActiveSampahType: (type) =>
+    set({ activeSampahType: type, selectedFeature: null }),
   setSelectedFeature: (feature) => set({ selectedFeature: feature }),
-  setActiveSampahType: (type) => set({ activeSampahType: type }), // Implementasi setter
+  setCurrentBasemap: (basemap) => set({ currentBasemap: basemap }),
+  setSearchTerm: (term) => set({ searchTerm: term }),
+  setSearchResultCenter: (center) => set({ searchResultCenter: center }),
+  clearGeocodingSuggestions: () => set({ geocodingSuggestions: [] }), // Aksi untuk membersihkan saran
+
+  // --- AKSI PENCARIAN GEOCODING BARU ---
+  fetchGeocodingSuggestions: async () => {
+    const { searchTerm } = get();
+    if (searchTerm.length < 3) {
+      // Jangan cari jika input terlalu pendek
+      set({ geocodingSuggestions: [] });
+      return;
+    }
+
+    set({ isGeocodingLoading: true });
+
+    try {
+      // Gunakan URLSearchParams untuk encoding yang aman
+      const params = new URLSearchParams({
+        q: searchTerm,
+        format: "json",
+        addressdetails: "1",
+        limit: "5", // Batasi hasil menjadi 5 saran
+      });
+
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?${params.toString()}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Nominatim API error! status: ${response.status}`);
+      }
+
+      const data: GeocodingResult[] = await response.json();
+      set({ geocodingSuggestions: data });
+    } catch (error) {
+      console.error("Failed to fetch geocoding suggestions:", error);
+      set({ geocodingSuggestions: [] }); // Bersihkan jika error
+    } finally {
+      set({ isGeocodingLoading: false });
+    }
+  },
 }));

@@ -14,7 +14,7 @@ import {
 
 const GeoJsonLayer = () => {
   const [data, setData] = useState<AppFeatureCollection | null>(null);
-  const { isDataVisible, setSelectedFeature } = useMapStore();
+  const { isDataLayerVisible, setSelectedFeature } = useMapStore();
 
   useEffect(() => {
     fetch("/data/RancamanyarDummy.geojson")
@@ -95,7 +95,7 @@ const GeoJsonLayer = () => {
     });
   };
 
-  if (!isDataVisible || !data) {
+  if (!isDataLayerVisible || !data) {
     return null;
   }
 
@@ -104,7 +104,7 @@ const GeoJsonLayer = () => {
       data={data}
       style={getStyle}
       onEachFeature={onEachFeature}
-      key={JSON.stringify(data) + String(isDataVisible)}
+      key={JSON.stringify(data) + String(isDataLayerVisible)}
     />
   );
 };
