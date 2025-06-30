@@ -81,10 +81,10 @@ export interface MapStoreState {
   activeSampahType: SampahType;
   selectedFeature: LeafletCompatibleBuildingFeature | null;
   currentBasemap: BasemapConfig;
+
+  // State & Aksi Pencarian BARU
   searchTerm: string;
   searchResultCenter: LatLngExpression | null;
-
-  // <<< TAMBAHAN BARU >>>
   geocodingSuggestions: GeocodingResult[]; // Untuk menyimpan saran autocomplete
   isGeocodingLoading: boolean; // Untuk menampilkan indikator loading
 

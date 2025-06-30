@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useMapStore } from "@/store/mapStore";
@@ -23,22 +24,20 @@ function LayerControl() {
 
   return (
     <Card className="w-full">
-      <CardHeader className="py-3 px-4 border-b">
-        <CardTitle className="text-base">Select Layer</CardTitle>
-      </CardHeader>
-      <CardContent className="p-3 space-y-4">
+      <CardHeader className=" px-4 border-b">
         {/* Kontrol untuk Data Dummy/Bangunan */}
-        <div className="flex items-center justify-between">
+        <CardTitle className="flex items-center justify-between h-0">
           <Label htmlFor="data-dummy" className="text-sm font-medium">
-            Data Dummy
+            Data Layer
           </Label>
           <Checkbox
             id="data-dummy"
             checked={isDataLayerVisible}
             onCheckedChange={toggleDataLayerVisibility}
           />
-        </div>
-
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="px-3 space-y-2">
         {/* Kontrol untuk memilih jenis sampah (jika diperlukan) */}
         {/* Anda bisa menambahkan ini jika ingin dropdown seperti di gambar referensi kedua */}
         <div>
@@ -46,7 +45,7 @@ function LayerControl() {
             htmlFor="sampah-type-select"
             className="text-xs text-muted-foreground mb-1 block"
           >
-            Visualisasi Berdasarkan
+            Visualisasi Berdasarkan Data Sampah
           </Label>
           <Select
             value={activeSampahType}

@@ -1,58 +1,64 @@
 import { LatLngExpression } from "leaflet";
 import type { SampahType, LegendItem, BasemapConfig } from "@/types";
 
-// --- TAMBAHAN BARU: Konfigurasi Peta Default ---
-export const DEFAULT_MAP_CENTER: LatLngExpression = [-6.98043, 107.5945]; // SESUAIKAN JIKA PERLU
+// Konfigurasi Peta Default (Tidak Diubah)
+export const DEFAULT_MAP_CENTER: LatLngExpression = [-6.98043, 107.5945];
+export const DEFAULT_MAP_ZOOM = 17;
+export const DEFAULT_FLY_TO_ZOOM = 15;
 
-export const DEFAULT_MAP_ZOOM = 17; // SESUAIKAN JIKA PERLU
-export const DEFAULT_FLY_TO_ZOOM = 15; // Zoom saat pindah ke lokasi pencarian
-
-// SESUAIKAN RENTANG NILAI DAN WARNA INI DENGAN DATA ANDA
-// Ini adalah jantung dari styling dan legenda Anda
+// --- PALET WARNA BARU DITERAPKAN DI SINI ---
+// Struktur dan label dipertahankan, hanya nilai 'color' yang diubah.
 export const sampahColorRanges: Record<SampahType, LegendItem[]> = {
+  // Palet Ungu untuk Estimasi (Tajam dan Netral)
   Estimasi: [
-    { color: "#FFFFE5", label: "0 - 25" },
-    { color: "#FFF7BC", label: "26 - 50" },
-    { color: "#FEE391", label: "51 - 75" },
-    { color: "#FEC44F", label: "76 - 100" },
-    { color: "#FE9929", label: "101 - 150" },
-    { color: "#EC7014", label: "151 - 200" },
-    { color: "#CC4C02", label: "201 - 300" },
-    { color: "#8C2D04", label: "> 300" },
+    { color: "#f3e8ff", label: "0 - 25" },
+    { color: "#d8b4fe", label: "26 - 50" },
+    { color: "#a855f7", label: "51 - 75" },
+    { color: "#9333ea", label: "76 - 100" },
+    { color: "#7e22ce", label: "101 - 150" },
+    { color: "#6b21a8", label: "151 - 200" },
+    { color: "#581c87", label: "201 - 300" },
+    { color: "#3b0764", label: "> 300" },
   ],
+  // Palet Biru untuk Sampah Plastik (Kontras Tinggi)
   "Sampah Plastik (kg)": [
-    // Menggunakan skema warna hijau dari gambar Anda
-    { color: "#22C55E", label: "0 - 20 kg" }, // green-500
-    { color: "#16A34A", label: "20 - 40 kg" }, // green-600
-    { color: "#15803D", label: "40 - 60 kg" }, // green-700
-    { color: "#166534", label: "60 - 80 kg" }, // green-800
-    { color: "#14532D", label: "> 80 kg" }, // green-900
+    { color: "#00ffff", label: "0 - 20 kg" },
+    { color: "#00bfff", label: "20 - 40 kg" },
+    { color: "#009fff", label: "40 - 60 kg" },
+    { color: "#0080ff", label: "60 - 80 kg" },
+    { color: "#0060ff", label: "> 80 kg" },
   ],
+  // Palet Hijau Zamrud untuk Sampah Organik (Lebih Kaya dan Jelas)
   "Sampah Organik (kg)": [
-    { color: "#F7FCF5", label: "0 - 20 kg" },
-    { color: "#E5F5E0", label: "20.1 - 40 kg" },
-    { color: "#C7E9C0", label: "40.1 - 60 kg" },
-    { color: "#A1D99B", label: "60.1 - 80 kg" },
-    { color: "#74C476", label: "> 80 kg" },
+    { color: "#9080ff", label: "0 - 20 kg" },
+    { color: "#776bcd", label: "20.1 - 40 kg" },
+    { color: "#5e569b", label: "40.1 - 60 kg" },
+    { color: "#48446e", label: "60.1 - 80 kg" },
+    { color: "#363445", label: "> 80 kg" },
   ],
+  // Palet Oranye/Coklat untuk Sampah Anorganik (Berbeda dan Jelas)
   "sampah Anorganik (kg)": [
-    { color: "#FFF5EB", label: "0 - 10 kg" },
-    { color: "#FEE6CE", label: "10.1 - 20 kg" },
-    { color: "#FDD0A2", label: "20.1 - 30 kg" },
-    { color: "#FDAE6B", label: "30.1 - 40 kg" },
-    { color: "#FD8D3C", label: "> 40 kg" },
+    { color: "#ffb400", label: "0 - 10 kg" },
+
+    { color: "#d2980d", label: "10.1 - 20 kg" },
+
+    { color: "#a57c1b", label: "20.1 - 30 kg" },
+
+    { color: "#786028", label: "30.1 - 40 kg" },
+
+    { color: "#363445", label: "> 40 kg" },
   ],
 };
 
-// Fungsi helper untuk mendapatkan warna berdasarkan nilai dan tipe sampah
+// Fungsi helper (Tidak Diubah)
+// Logika ini tetap valid dan akan bekerja dengan warna baru secara otomatis.
 export function getColorForValue(
   value: number | undefined,
   type: SampahType
 ): string {
   const ranges = sampahColorRanges[type];
-  if (typeof value !== "number" || !ranges) return "#CCCCCC"; // Default jika tipe tidak ada atau nilai tidak valid
+  if (typeof value !== "number" || !ranges) return "#CCCCCC";
 
-  // PENTING: Sesuaikan logika if/else ini agar sesuai dengan rentang `label` di atas
   if (type === "Estimasi") {
     if (value <= 25) return ranges[0].color;
     if (value <= 50) return ranges[1].color;
@@ -84,11 +90,11 @@ export function getColorForValue(
     if (value <= 40) return ranges[3].color;
     return ranges[4].color;
   }
-  // Fallback jika tidak ada kondisi yang cocok (seharusnya tidak terjadi jika logika if/else lengkap)
+
   return ranges[ranges.length - 1]?.color || "#CCCCCC";
 }
 
-// Konfigurasi Basemap
+// Konfigurasi Basemap (Tidak Diubah)
 export const initialBasemap: BasemapConfig = {
   id: "light",
   name: "Light",
@@ -101,7 +107,7 @@ export const initialBasemap: BasemapConfig = {
 export const availableBasemaps: Record<string, BasemapConfig> = {
   light: initialBasemap,
   dark: {
-    id: "dark", // Sesuai dengan gambar referensi Anda
+    id: "dark",
     name: "Dark",
     url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
     attribution:

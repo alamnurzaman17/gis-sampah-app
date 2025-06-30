@@ -1,110 +1,73 @@
+// src/components/map/GeoJsonLayer.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { GeoJSON } from "react-leaflet";
-import { useMapStore } from "@/store/mapStore"; // Pastikan store ini ada dan berfungsi
-import { Layer, PathOptions, StyleFunction } from "leaflet";
-// Impor tipe yang sudah diperbarui
+import { useMapStore } from "@/store/mapStore";
+import { Layer, StyleFunction } from "leaflet";
 import {
+  AppSpecificBuildingFeature,
+  LeafletCompatibleBuildingFeature,
   BuildingProperties,
-  AppFeatureCollection,
-  AppSpecificBuildingFeature, // Tipe spesifik dengan MultiPolygon
-  LeafletCompatibleBuildingFeature, // Tipe generik untuk callback Leaflet
-} from "@/types"; // Pastikan path ini benar
+} from "@/types";
+import { getColorForValue } from "@/lib/mapUtils";
 
 const GeoJsonLayer = () => {
-  const [data, setData] = useState<AppFeatureCollection | null>(null);
-  const { isDataLayerVisible, setSelectedFeature } = useMapStore();
+  const {
+    isDataLayerVisible,
+    setSelectedFeature,
+    activeSampahType,
+    geoJsonData,
+  } = useMapStore();
 
-  useEffect(() => {
-    fetch("/data/RancamanyarDummy.geojson")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((geojsonData: AppFeatureCollection) => {
-        console.log("Data GeoJSON berhasil dimuat:", geojsonData);
-        setData(geojsonData);
-      })
-      .catch((error) => {
-        console.error("Gagal memuat data GeoJSON:", error);
-      });
-  }, []);
-
-  // getStyle sekarang menerima fitur yang kompatibel dengan Leaflet,
-  // dengan properties bertipe BuildingProperties.
-  const getStyle: StyleFunction<BuildingProperties> = (
-    feature?: LeafletCompatibleBuildingFeature // Menggunakan tipe generik
-  ): PathOptions => {
-    if (!feature || !feature.properties) {
+  const styleFunction: StyleFunction<BuildingProperties> = useMemo(
+    () => (feature) => {
+      if (!feature?.properties) {
+        return {
+          fillColor: "#CCCCCC",
+          weight: 0.5,
+          color: "#6B7280",
+          fillOpacity: 0.5,
+          opacity: 1,
+        };
+      }
+      const value = feature.properties[activeSampahType];
+      const fillColor = getColorForValue(
+        typeof value === "number" ? value : undefined,
+        activeSampahType
+      );
       return {
-        fillColor: "#CCCCCC",
+        fillColor,
         weight: 0.5,
-        color: "#6B7280",
-        fillOpacity: 0.5,
         opacity: 1,
+        color: "#4B5563",
+        fillOpacity: 0.8,
       };
-    }
-
-    // Akses properti. Karena sudah didefinisikan di BuildingProperties (mungkin opsional),
-    // kita perlu menangani kasus undefined.
-    const sampahPlastik = feature.properties["Sampah Plastik (kg)"];
-    let fillColor = "#9CA3AF"; // Warna abu-abu default
-
-    if (typeof sampahPlastik === "number") {
-      // Pemeriksaan tipe memastikan sampahPlastik adalah angka
-      if (sampahPlastik > 80) fillColor = "#14532D";
-      else if (sampahPlastik > 60) fillColor = "#166534";
-      else if (sampahPlastik > 40) fillColor = "#15803D";
-      else if (sampahPlastik > 20) fillColor = "#16A34A";
-      else fillColor = "#22C55E";
-    } else {
-      // Handle jika sampahPlastik undefined atau bukan angka
-      // console.warn(`Properti "Sampah Plastik (kg)" tidak valid atau tidak ada untuk fitur ID: ${feature.properties.Id}`);
-    }
-
-    return {
-      fillColor: fillColor,
-      weight: 0.5,
-      opacity: 1,
-      color: "#4B5563",
-      fillOpacity: 0.8,
-    };
-  };
+    },
+    [activeSampahType]
+  ); // Style hanya dihitung ulang saat tipe sampah berubah
 
   const onEachFeature = (
-    feature: LeafletCompatibleBuildingFeature, // Menggunakan tipe generik
+    feature: LeafletCompatibleBuildingFeature,
     layer: Layer
   ) => {
     layer.on({
       click: () => {
-        // Jika setSelectedFeature di store Anda mengharapkan tipe AppSpecificBuildingFeature
-        // (dengan geometri MultiPolygon yang ketat), Anda perlu melakukan type guard.
-        if (feature.geometry && feature.geometry.type === "MultiPolygon") {
-          setSelectedFeature(feature as AppSpecificBuildingFeature);
-        } else {
-          console.warn(
-            "Fitur yang diklik bukan MultiPolygon atau tidak memiliki geometri yang valid:",
-            feature
-          );
-          setSelectedFeature(feature as AppSpecificBuildingFeature); // Ini akan error jika geometrinya BUKAN MultiPolygon saat runtime
-        }
+        setSelectedFeature(feature as AppSpecificBuildingFeature);
       },
     });
   };
 
-  if (!isDataLayerVisible || !data) {
+  if (!isDataLayerVisible || !geoJsonData) {
     return null;
   }
 
   return (
     <GeoJSON
-      data={data}
-      style={getStyle}
+      data={geoJsonData}
+      style={styleFunction}
       onEachFeature={onEachFeature}
-      key={JSON.stringify(data) + String(isDataLayerVisible)}
+      key={activeSampahType} // Ini SANGAT PENTING untuk memaksa Leaflet menggambar ulang style
     />
   );
 };

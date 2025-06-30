@@ -33,16 +33,6 @@ export function Toolbar() {
     map.flyTo(DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM);
   };
 
-  // const handleLogCenter = () => {
-  //   const center = map.getCenter();
-  //   console.log(
-  //     `Pusat Peta Saat Ini: [${center.lat.toFixed(5)}, ${center.lng.toFixed(
-  //       5
-  //     )}]`
-  //   );
-  //   console.log("Zoom Level Saat Ini:", map.getZoom());
-  // };
-
   return (
     // Mengganti flex-col dengan space-y-0 agar bisa menggabungkan styling grup
     <div className="absolute top-4 right-4 z-[1000] flex flex-col items-end">

@@ -5,7 +5,7 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import { useMapStore } from "@/store/mapStore";
 import GeoJsonLayer from "./GeoJsonLayer";
 import { ChangeView } from "./ChangeView";
-import { Toolbar } from "../ui/Toolbar";
+import { Toolbar } from "../controls/Toolbar";
 import { Map as LeafletMap } from "leaflet";
 import {
   DEFAULT_MAP_CENTER,

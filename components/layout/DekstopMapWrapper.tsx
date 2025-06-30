@@ -1,3 +1,5 @@
+// src/components/layout/DekstopMapWrapper.tsx
+
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -5,17 +7,16 @@ import dynamic from "next/dynamic";
 import { useMapStore } from "@/store/mapStore";
 import { Map as LeafletMap } from "leaflet";
 
-// Pindahkan semua import komponen UI ke sini
-import Header from "@/components/ui/Header";
-import LayerControl from "@/components/ui/LayerControl";
-import LegendDisplay from "@/components/LegendDisplay";
-import BuildingInfo from "@/components/BuildingInfo";
+import Header from "@/components/layout/Header";
+import LayerControl from "@/components/controls/LayerControl";
+import LegendDisplay from "@/components/panel/LegendDisplay";
+// Komponen kartu informasi yang akan kita tampilkan di tengah
+import BuildingInfo from "@/components/panel/BuildingInfo";
 
-// Impor ikon untuk tombol toggle sidebar
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
-// Pindahkan dynamic import ke sini
 const MapDisplay = dynamic(() => import("@/components/map/MapDisplay"), {
   ssr: false,
   loading: () => (
@@ -25,12 +26,13 @@ const MapDisplay = dynamic(() => import("@/components/map/MapDisplay"), {
   ),
 });
 
-export default function MapWrapper() {
-  const { setGeoJsonData, setAllFeatures } = useMapStore();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Default sidebar terbuka
+export default function DekstopMapWrapper() {
+  // Ambil state 'selectedFeature' untuk menentukan kapan harus menampilkan kartu
+  const { setGeoJsonData, setAllFeatures, selectedFeature } = useMapStore();
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const mapRef = useRef<LeafletMap | null>(null);
 
-  // Efek untuk memuat data GeoJSON saat komponen MapWrapper pertama kali dimuat
   useEffect(() => {
     fetch("/data/RancamanyarDummy.geojson")
       .then((res) => {
@@ -45,33 +47,35 @@ export default function MapWrapper() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // --- EFEK BARU UNTUK OPTIMALISASI PETA ---
   useEffect(() => {
-    // Beri sedikit jeda agar transisi CSS selesai sebelum me-refresh ukuran peta
     const timer = setTimeout(() => {
       if (mapRef.current) {
         mapRef.current.invalidateSize();
       }
-    }, 350); // 350ms, sedikit lebih lama dari durasi transisi (300ms)
+    }, 350);
 
     return () => {
-      clearTimeout(timer); // Cleanup timer
+      clearTimeout(timer);
     };
-  }, [isSidebarOpen]); // Jalankan efek ini setiap kali isSidebarOpen berubah
+  }, [isSidebarOpen]);
 
   return (
-    // KONTENER UTAMA: Menggunakan Flexbox untuk mengatur sidebar dan peta
     <div className="flex h-screen w-screen overflow-hidden bg-background">
       {/* SIDEBAR */}
       <aside
         className={`transition-all duration-300 ease-in-out bg-card border-r flex flex-col z-20 shadow-lg
-                    ${isSidebarOpen ? "w-[320px] p-3" : "w-0 -ml-1 p-0"}`} // Lebar bisa disesuaikan
+                    ${isSidebarOpen ? "w-[320px] p-3" : "w-0 -ml-1 p-0"}`}
       >
-        {/* Konten sidebar hanya dirender jika isSidebarOpen true */}
         {isSidebarOpen && (
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between mb-2">
-              <h1 className="text-lg font-semibold px-1">Select Layer</h1>
+              <Image
+                src="/logo-plasticycle-gis.png" // Path relatif dari folder /public
+                alt="PlastiCycleGIS Logo"
+                width={180} // Sesuaikan lebar sesuai kebutuhan
+                height={40} // Sesuaikan tinggi untuk menjaga rasio aspek
+                priority // Tambahkan ini agar logo dimuat lebih awal
+              />
               <Button
                 variant="ghost"
                 size="icon"
@@ -81,16 +85,14 @@ export default function MapWrapper() {
                 <ChevronLeft size={20} />
               </Button>
             </div>
-            {/* LayerControl sekarang berada di dalam sidebar */}
             <div className="flex-grow overflow-y-auto pr-1">
               <LayerControl />
-              {/* Anda bisa menambahkan komponen sidebar lain di sini, seperti Accordion */}
             </div>
           </div>
         )}
       </aside>
 
-      {/* TOMBOL TOGGLE SIDEBAR (jika tertutup) */}
+      {/* TOMBOL TOGGLE SIDEBAR */}
       {!isSidebarOpen && (
         <Button
           size="icon"
@@ -107,14 +109,29 @@ export default function MapWrapper() {
       {/* AREA PETA UTAMA */}
       <main className="flex-grow relative">
         <Header />
-        <MapDisplay onMapCreated={(map) => (mapRef.current = map)} />{" "}
+        <MapDisplay onMapCreated={(map) => (mapRef.current = map)} />
         <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 z-[1000]">
           <LegendDisplay />
         </div>
-      </main>
 
-      {/* Info Bangunan  */}
-      <BuildingInfo />
+        {/* --- INI BAGIAN KUNCI UNTUK KARTU MENGAMBANG DI TENGAH --- */}
+        {/* Tampilkan overlay ini HANYA jika ada 'selectedFeature' */}
+        {selectedFeature && (
+          <div
+            // Container overlay yang menutupi seluruh area peta
+            className="absolute inset-0 z-[1001] flex items-center justify-center  pointer-events-none"
+          >
+            {/* 
+              Komponen BuildingInfo dirender di dalam container.
+              Flexbox 'items-center justify-center' akan memposisikannya tepat di tengah.
+              Container memiliki 'pointer-events-none' agar peta bisa digeser.
+              Komponen BuildingInfo sendiri memiliki 'pointer-events-auto' agar bisa diklik.
+            */}
+            <BuildingInfo />
+          </div>
+        )}
+        {/* --- AKHIR DARI BAGIAN KARTU MENGAMBANG --- */}
+      </main>
     </div>
   );
 }
