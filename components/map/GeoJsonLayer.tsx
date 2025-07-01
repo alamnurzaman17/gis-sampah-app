@@ -1,4 +1,3 @@
-// src/components/map/GeoJsonLayer.tsx
 "use client";
 
 import { useMemo } from "react";
@@ -18,15 +17,21 @@ const GeoJsonLayer = () => {
     setSelectedFeature,
     activeSampahType,
     geoJsonData,
+    currentBasemap,
   } = useMapStore();
 
   const styleFunction: StyleFunction<BuildingProperties> = useMemo(
     () => (feature) => {
+      // <<< Logika untuk menentukan style border dinamis >>>
+      const isDarkTheme = currentBasemap.id === "dark";
+      const borderColor = isDarkTheme ? "#FFFFFF" : "#4B5563"; // Putih di tema gelap, abu-abu di tema terang
+      const borderWidth = isDarkTheme ? 0.8 : 0.5; // Sedikit lebih tebal di tema gelap
+
       if (!feature?.properties) {
         return {
           fillColor: "#CCCCCC",
-          weight: 0.5,
-          color: "#6B7280",
+          weight: borderWidth,
+          color: borderColor,
           fillOpacity: 0.5,
           opacity: 1,
         };
@@ -38,13 +43,13 @@ const GeoJsonLayer = () => {
       );
       return {
         fillColor,
-        weight: 0.5,
+        weight: borderWidth,
         opacity: 1,
-        color: "#4B5563",
+        color: borderColor,
         fillOpacity: 0.8,
       };
     },
-    [activeSampahType]
+    [activeSampahType, currentBasemap.id]
   ); // Style hanya dihitung ulang saat tipe sampah berubah
 
   const onEachFeature = (

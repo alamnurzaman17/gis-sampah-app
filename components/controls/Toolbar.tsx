@@ -20,7 +20,8 @@ import { cn } from "@/lib/utils";
 
 export function Toolbar() {
   const map = useMap();
-  const { currentBasemap, setCurrentBasemap } = useMapStore();
+  const { currentBasemap, setCurrentBasemap, setSearchResultCenter } =
+    useMapStore();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false); // State untuk mengontrol Popover
 
   const handleBasemapChange = (basemap: typeof currentBasemap) => {
@@ -31,6 +32,7 @@ export function Toolbar() {
   // --- FUNGSI BARU UNTUK KEMBALI KE POSISI AWAL ---
   const handleGoToHome = () => {
     map.flyTo(DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM);
+    setSearchResultCenter(null);
   };
 
   return (
@@ -43,7 +45,7 @@ export function Toolbar() {
           variant="ghost"
           size="icon"
           onClick={() => map.zoomIn()}
-          className="rounded-none border-b"
+          className="rounded-none border-b cursor-pointer"
         >
           <Plus size={18} />
         </Button>
@@ -53,7 +55,7 @@ export function Toolbar() {
           variant="ghost"
           size="icon"
           onClick={() => map.zoomOut()}
-          className="rounded-none"
+          className="rounded-none cursor-pointer"
         >
           <Minus size={18} />
         </Button>
@@ -65,7 +67,7 @@ export function Toolbar() {
           variant="ghost"
           size="icon"
           onClick={handleGoToHome}
-          className="rounded-none"
+          className="rounded-none cursor-pointer"
         >
           <LocateFixed size={18} />
         </Button>
@@ -76,7 +78,11 @@ export function Toolbar() {
         {/* Tombol Basemap */}
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-none">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-none cursor-pointer"
+            >
               <Map size={18} />
             </Button>
           </PopoverTrigger>
@@ -90,7 +96,7 @@ export function Toolbar() {
                     key={basemap.id}
                     onClick={() => handleBasemapChange(basemap)}
                     className={cn(
-                      "flex flex-col items-center space-y-1 p-1 rounded-md transition-all outline-none",
+                      "flex flex-col items-center space-y-1 p-1 rounded-md transition-all outline-none cursor-pointer",
                       "hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring",
                       currentBasemap.id === basemap.id && "ring-2 ring-primary"
                     )}

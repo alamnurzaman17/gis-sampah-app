@@ -1,5 +1,3 @@
-// src/components/layout/DekstopMapWrapper.tsx
-
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -8,14 +6,14 @@ import { useMapStore } from "@/store/mapStore";
 import { Map as LeafletMap } from "leaflet";
 
 import Header from "@/components/layout/Header";
-import LayerControl from "@/components/controls/LayerControl";
+// import LayerControl from "@/components/controls/LayerControl";
 import LegendDisplay from "@/components/panel/LegendDisplay";
 // Komponen kartu informasi yang akan kita tampilkan di tengah
 import BuildingInfo from "@/components/panel/BuildingInfo";
-
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+
+import { ChevronRight } from "lucide-react";
+import SidebarContent from "./SidebarContent";
 
 const MapDisplay = dynamic(() => import("@/components/map/MapDisplay"), {
   ssr: false,
@@ -67,32 +65,11 @@ export default function DekstopMapWrapper() {
                     ${isSidebarOpen ? "w-[320px] p-3" : "w-0 -ml-1 p-0"}`}
       >
         {isSidebarOpen && (
-          <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between mb-2">
-              <Image
-                src="/logo-plasticycle-gis.png" // Path relatif dari folder /public
-                alt="PlastiCycleGIS Logo"
-                width={180} // Sesuaikan lebar sesuai kebutuhan
-                height={40} // Sesuaikan tinggi untuk menjaga rasio aspek
-                priority // Tambahkan ini agar logo dimuat lebih awal
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSidebarOpen(false)}
-                className="h-8 w-8"
-              >
-                <ChevronLeft size={20} />
-              </Button>
-            </div>
-            <div className="flex-grow overflow-y-auto pr-1">
-              <LayerControl />
-            </div>
-          </div>
+          <SidebarContent onClose={() => setIsSidebarOpen(false)} />
         )}
       </aside>
 
-      {/* TOMBOL TOGGLE SIDEBAR */}
+      {/* Tombol Toggle Sidebar */}
       {!isSidebarOpen && (
         <Button
           size="icon"

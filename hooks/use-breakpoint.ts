@@ -2,29 +2,41 @@
 
 import { useState, useEffect } from "react";
 
-// Breakpoint default untuk mobile (sesuai dengan Tailwind CSS 'md')
-const MOBILE_BREAKPOINT = 768;
+// Definisikan breakpoint Anda (sesuai dengan Tailwind CSS)
+const breakpoints = {
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  "2xl": 1536,
+};
 
-export function useBreakpoint() {
-  const [isMobile, setIsMobile] = useState(false);
+type Breakpoint = keyof typeof breakpoints;
+
+export const useBreakpoint = (breakpoint: Breakpoint): boolean => {
+  const [isMatch, setIsMatch] = useState(false);
 
   useEffect(() => {
-    // Fungsi untuk memeriksa ukuran window
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    // Fungsi untuk memeriksa ukuran layar
+    const handleResize = () => {
+      if (window.innerWidth < breakpoints[breakpoint]) {
+        setIsMatch(true);
+      } else {
+        setIsMatch(false);
+      }
     };
 
     // Panggil sekali saat komponen dimuat
-    checkScreenSize();
+    handleResize();
 
     // Tambahkan event listener untuk memantau perubahan ukuran window
-    window.addEventListener("resize", checkScreenSize);
+    window.addEventListener("resize", handleResize);
 
     // Cleanup: hapus event listener saat komponen di-unmount
     return () => {
-      window.removeEventListener("resize", checkScreenSize);
+      window.removeEventListener("resize", handleResize);
     };
-  }, []); // Array dependensi kosong agar efek ini hanya berjalan sekali
+  }, [breakpoint]); // Jalankan ulang efek jika breakpoint berubah
 
-  return { isMobile };
-}
+  return isMatch;
+};

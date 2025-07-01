@@ -13,8 +13,8 @@ export const useMapStore = create<MapStoreState>((set, get) => ({
   currentBasemap: initialBasemap,
   searchTerm: "",
   searchResultCenter: null,
-  geocodingSuggestions: [], // <<< STATE BARU
-  isGeocodingLoading: false, // <<< STATE BARU
+  geocodingSuggestions: [],
+  isGeocodingLoading: false,
 
   // --- AKSI ---
   setGeoJsonData: (data) => set({ geoJsonData: data }),
@@ -29,7 +29,7 @@ export const useMapStore = create<MapStoreState>((set, get) => ({
   setSearchResultCenter: (center) => set({ searchResultCenter: center }),
   clearGeocodingSuggestions: () => set({ geocodingSuggestions: [] }), // Aksi untuk membersihkan saran
 
-  // --- AKSI PENCARIAN GEOCODING BARU ---
+  // --- AKSI PENCARIAN GEOCODING  ---
   fetchGeocodingSuggestions: async () => {
     const { searchTerm } = get();
     if (searchTerm.length < 3) {

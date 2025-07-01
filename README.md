@@ -1,6 +1,4 @@
-# GisSampah App - Aplikasi Pemetaan Sampah
-
-Selamat datang di GisSampah App, sebuah platform pemetaan interaktif yang dibangun dengan Next.js untuk memvisualisasikan dan menganalisis data sampah di suatu area. Aplikasi ini menyediakan antarmuka yang bersih dan modern untuk menampilkan data geografis dengan berbagai fitur.
+# GisSampah App - Aplikasi Pemetaan Sampah Responsif.
 
 ![Screenshot Aplikasi](https://i.ibb.co/L5Q2ZfB/image.png)
 
@@ -8,15 +6,23 @@ Selamat datang di GisSampah App, sebuah platform pemetaan interaktif yang dibang
 
 ## ✨ Fitur Utama
 
-- **Peta Interaktif**: Tampilan peta yang mulus menggunakan Leaflet.js.
-- **Visualisasi Data Dinamis**: Data GeoJSON bangunan ditampilkan dan diwarnai berdasarkan atribut yang dipilih (misalnya, volume sampah plastik, dll.).
-- **Pencarian Lokasi Geografis**: Mencari nama tempat atau alamat di seluruh dunia menggunakan API Nominatim, dengan saran autocomplete.
-- **Kontrol Layer**: Menampilkan atau menyembunyikan layer data bangunan.
-- **Pilihan Basemap**: Beralih antara tema peta Light, Dark, dan Satellite.
-- **Toolbar Peta**: Kontrol terpusat untuk Zoom In/Out, kembali ke posisi awal, dan memilih basemap.
-- **Info Detail**: Menampilkan informasi rinci dari bangunan yang diklik dalam panel `Sheet` yang elegan.
-- **Tooltip Interaktif**: Informasi singkat (ID dan RT) muncul saat kursor diarahkan ke bangunan.
-- **Legenda Dinamis**: Legenda peta otomatis diperbarui sesuai dengan visualisasi data yang aktif.
+- **Desain Responsif (Mobile-First)**: Antarmuka yang dioptimalkan sepenuhnya, memberikan pengalaman pengguna yang berbeda dan intuitif di perangkat desktop dan mobile.
+- **Peta Interaktif**: Tampilan peta yang mulus dan cepat menggunakan Leaflet.js dan React-Leaflet.
+- **Visualisasi Data Dinamis**: Data GeoJSON diwarnai secara dinamis berdasarkan atribut yang dipilih (Estimasi, Sampah Plastik, Organik, dll.).
+- **Pencarian Lokasi Geografis**: Mencari nama tempat atau alamat di seluruh dunia menggunakan API Nominatim, dengan saran autocomplete dan debounce untuk performa optimal.
+- **Manajemen State Terpusat**: Menggunakan Zustand untuk state management yang efisien dan mudah diakses di seluruh komponen.
+- **Kontrol Layer & Legenda Dinamis**: Menampilkan/menyembunyikan layer data dan legenda peta yang otomatis beradaptasi dengan visualisasi aktif.
+- **Toolbar Peta Adaptif**:
+  - **Desktop**: Toolbar vertikal yang ringkas untuk Zoom, Kembali ke Posisi Awal, dan Pilihan Basemap.
+  - **Mobile**: Tombol aksi utama yang membuka `Popover` berisi semua alat peta, menghemat ruang layar.
+- **Sidebar Cerdas**:
+  - **Desktop**: Sidebar statis yang dapat disembunyikan.
+  - **Mobile**: Sidebar "drawer" yang muncul dari samping dengan backdrop gelap.
+- **Panel Informasi Detail**: Menampilkan informasi rinci dari poligon yang diklik dalam kartu (card) yang mengambang di tengah layar.
+- **Tema Peta & Styling Dinamis**:
+  - Beralih dengan mulus antara tema peta Light, Dark, dan Satellite.
+  - Border poligon secara otomatis berubah menjadi putih pada tema gelap untuk kontras maksimal.
+- **Indikator Skala Kustom**: Menampilkan skala peta (misal, "50 m") dalam format teks minimalis, tanpa elemen grafis yang mengganggu.
 
 ---
 
@@ -35,23 +41,26 @@ Selamat datang di GisSampah App, sebuah platform pemetaan interaktif yang dibang
 
 ## 📁 Struktur Folder Proyek
 
-Struktur folder proyek ini diorganisir untuk modularitas dan kemudahan pemeliharaan.
+Proyek ini menggunakan struktur direktori root untuk kejelasan, memisahkan logika aplikasi, hooks, dan state management.
 
 ```
 gissampah-app/
-├── app/                  # Direktori utama Next.js App Router (halaman dan layout)
+├── app/ # Direktori utama Next.js App Router (halaman dan layout)
 ├── components/
-│   ├── map/              # Komponen inti terkait peta (MapDisplay, GeoJsonLayer, dll.)
-│   └── ui/               # Komponen UI kustom dan dari shadcn/ui
-├── config/               # File konfigurasi (misal: basemaps, warna legenda)
-├── hooks/                # Hooks kustom React (misal: useDebounce)
-├── lib/                  # Fungsi utilitas (mapUtils.ts, utils.ts dari shadcn)
+│ ├── controls/ # Kontrol peta (Toolbar, LayerControl, ScaleControl)
+│ ├── layout/ # Komponen layout utama (Desktop/Mobile Wrappers, Header, Sidebar)
+│ ├── map/ # Komponen inti peta (MapDisplay, GeoJsonLayer, ChangeView)
+│ ├── panel/ # Komponen panel informasi (BuildingInfo, LegendDisplay)
+│ └── ui/ # Komponen dari shadcn/ui
+├── hooks/ # Hooks kustom React (useDebounce, useBreakpoint)
+├── lib/ # Fungsi utilitas (mapUtils.ts, utils.ts)
 ├── public/
-│   ├── data/             # Tempat penyimpanan file GeoJSON
-│   └── images/           # Gambar thumbnail untuk basemap
-├── store/                # State management global (Zustand store)
-├── types/                # Definisi tipe TypeScript
-└── ...                   # File konfigurasi Next.js, Tailwind, dll.
+│ ├── data/ # Tempat penyimpanan file GeoJSON
+│ └── images/ # Gambar thumbnail untuk basemap
+├── store/ # State management global (Zustand: mapStore.ts)
+├── styles/ # File CSS kustom (misal: untuk override style Leaflet)
+├── types/ # Definisi tipe TypeScript global (index.ts)
+└── ... # File konfigurasi (next.js, tailwind, postcss, dll.)
 ```
 
 ---
@@ -67,7 +76,7 @@ gissampah-app/
 
 1.  Clone repositori ini:
     ```bash
-    git clone [URL_REPOSITORI_ANDA]
+    git clone [URL_REPOSITORI]
     ```
 2.  Masuk ke direktori proyek:
     ```bash

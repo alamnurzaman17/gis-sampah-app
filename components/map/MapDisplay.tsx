@@ -1,24 +1,28 @@
-// components/map/MapDisplay.tsx
 "use client";
 
 import { MapContainer, TileLayer } from "react-leaflet";
+import { Map as LeafletMap } from "leaflet";
 import { useMapStore } from "@/store/mapStore";
 import GeoJsonLayer from "./GeoJsonLayer";
 import { ChangeView } from "./ChangeView";
-import { Toolbar } from "../controls/Toolbar";
-import { Map as LeafletMap } from "leaflet";
 import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_ZOOM,
   DEFAULT_FLY_TO_ZOOM,
 } from "@/lib/mapUtils";
+
+import { Toolbar } from "../controls/Toolbar"; // Versi Desktop
+import { MobileToolbar } from "../controls/MobileToolbar"; // Versi Mobile
+import { useBreakpoint } from "@/hooks/use-breakpoint"; // Hook kita
+import { CustomScale } from "../controls/CustomScale";
+
 interface MapDisplayProps {
   onMapCreated: (map: LeafletMap) => void;
 }
 
-// const MapDisplay: React.FC<MapDisplayProps> = ({ onMapCreated }) => {
 const MapDisplay: React.FC<MapDisplayProps> = ({ onMapCreated }) => {
   const { currentBasemap, searchResultCenter } = useMapStore();
+  const isMobile = useBreakpoint("lg"); // Cek apakah ini mobile
 
   const handleMapRef = (instance: LeafletMap | null) => {
     if (instance) {
@@ -46,7 +50,9 @@ const MapDisplay: React.FC<MapDisplayProps> = ({ onMapCreated }) => {
       {/* Komponen ini akan mendeteksi perubahan pada `searchResultCenter` dan memicu `flyTo` */}
       <ChangeView center={searchResultCenter} zoom={DEFAULT_FLY_TO_ZOOM} />
 
-      <Toolbar />
+      {isMobile ? <MobileToolbar /> : <Toolbar />}
+
+      <CustomScale />
     </MapContainer>
   );
 };

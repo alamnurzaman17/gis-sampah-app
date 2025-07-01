@@ -30,6 +30,7 @@ function Header() {
       fetchGeocodingSuggestions();
     } else {
       clearGeocodingSuggestions();
+      setSearchResultCenter(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchTerm]);
@@ -62,7 +63,15 @@ function Header() {
   };
 
   return (
-    <header className="absolute top-4 left-0 right-0 mx-auto z-[1000] w-full max-w-sm px-4 md:max-w-md">
+    <header
+      className={cn(
+        "absolute top-4 z-[1000]",
+        // Style untuk Mobile: Beri jarak dari tombol menu kiri dan toolbar kanan
+        "left-16 right-4",
+        // Style untuk Desktop (md dan lebih besar): Kembali ke tengah
+        "md:left-0 md:right-0 md:mx-auto md:w-full md:max-w-md"
+      )}
+    >
       <div className="relative" ref={searchContainerRef}>
         <div className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground">
           <Search size={20} />
