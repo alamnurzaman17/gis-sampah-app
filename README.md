@@ -1,6 +1,8 @@
 # GisSampah App - Aplikasi Pemetaan Sampah Responsif.
 
-![Screenshot Aplikasi](https://i.ibb.co/L5Q2ZfB/image.png)
+|                    Tampilan Desktop                    |                   Tampilan Mobile                    |
+| :----------------------------------------------------: | :--------------------------------------------------: |
+| ![Screenshot Desktop](./assets/screenshot-desktop.png) | ![Screenshot Mobile](./assets/screenshot-mobile.png) |
 
 ---
 
