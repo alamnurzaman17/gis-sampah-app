@@ -18,20 +18,21 @@ const GeoJsonLayer = () => {
     activeSampahType,
     geoJsonData,
     currentBasemap,
+    selectedFeature,
   } = useMapStore();
 
   const styleFunction: StyleFunction<BuildingProperties> = useMemo(
     () => (feature) => {
-      // <<< Logika untuk menentukan style border dinamis >>>
+      // Style default (untuk poligon yang tidak terpilih)
       const isDarkTheme = currentBasemap.id === "dark";
-      const borderColor = isDarkTheme ? "#FFFFFF" : "#4B5563"; // Putih di tema gelap, abu-abu di tema terang
-      const borderWidth = isDarkTheme ? 0.8 : 0.5; // Sedikit lebih tebal di tema gelap
+      const defaultBorderColor = isDarkTheme ? "#FFFFFF" : "#4B5563";
+      const defaultBorderWidth = isDarkTheme ? 0.8 : 0.5;
 
       if (!feature?.properties) {
         return {
           fillColor: "#CCCCCC",
-          weight: borderWidth,
-          color: borderColor,
+          weight: defaultBorderWidth,
+          color: defaultBorderColor,
           fillOpacity: 0.5,
           opacity: 1,
         };
@@ -41,15 +42,32 @@ const GeoJsonLayer = () => {
         typeof value === "number" ? value : undefined,
         activeSampahType
       );
-      return {
-        fillColor,
-        weight: borderWidth,
-        opacity: 1,
-        color: borderColor,
-        fillOpacity: 0.8,
-      };
+
+      // --- 2. Logika untuk menyorot poligon terpilih ---
+      const isSelected =
+        selectedFeature?.properties.Id === feature.properties.Id;
+
+      if (isSelected) {
+        // Jika terpilih, kembalikan style highlight
+        return {
+          fillColor,
+          weight: 3, // Border lebih tebal
+          opacity: 1,
+          color: "#D946EF", // Warna border cerah (Cyan)
+          fillOpacity: 0.9, // Sedikit lebih solid
+        };
+      } else {
+        // Jika tidak terpilih, kembalikan style default
+        return {
+          fillColor,
+          weight: defaultBorderWidth,
+          opacity: 1,
+          color: defaultBorderColor,
+          fillOpacity: 0.8,
+        };
+      }
     },
-    [activeSampahType, currentBasemap.id]
+    [activeSampahType, currentBasemap.id, selectedFeature]
   ); // Style hanya dihitung ulang saat tipe sampah berubah
 
   const onEachFeature = (

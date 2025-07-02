@@ -20,7 +20,7 @@ interface ChartDataItem {
 // Konfigurasi kategori dan warna (tidak berubah)
 const analysisCategories = [
   { key: "Sampah Plastik (kg)" as const, name: "Plastik", color: "#f87171" },
-  { key: "Sampah Organik (kg)" as const, name: "Organik", color: "#38bdf8" },
+  { key: "Sampah Organik (kg)" as const, name: "Organik", color: "#38f88b" },
   { key: "sampah Anorganik (kg)" as const, name: "Lainnya", color: "#fbbf24" },
 ];
 const COLORS = analysisCategories.map((c) => c.color);

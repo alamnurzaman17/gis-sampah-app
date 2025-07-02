@@ -1,5 +1,3 @@
-// src/components/panel/BuildingInfo.tsx
-
 "use client";
 
 import React from "react";
@@ -56,7 +54,7 @@ interface PropertyRowProps {
 }
 
 const PropertyRow: React.FC<PropertyRowProps> = ({ label, value }) => (
-  <div className="flex justify-between items-center py-1.5 px-2 border-b border-border/50">
+  <div className="flex justify-between items-center py-1 px-1.5 md:py-1.5 md:px-2 border-b border-border/50 text-xs md:text-sm">
     <span className="text-muted-foreground">{label}</span>
     <span className="font-medium text-right text-green-600">{value}</span>
   </div>
@@ -72,32 +70,34 @@ export default function BuildingInfo() {
   const properties = selectedFeature.properties;
 
   return (
-    <Card className="w-[380px] max-w-md shadow-2xl bg-card/95 backdrop-blur-sm pointer-events-auto">
-      <CardHeader className="flex flex-row items-center justify-between  px-4">
+    <Card className="w-[300px] md:w-[380px] max-w-md shadow-2xl bg-card/95 backdrop-blur-sm pointer-events-auto">
+      <CardHeader className="flex flex-row items-center justify-between px-3 py-2 md:px-4 md:py-3">
         <div>
-          <CardTitle className="text-lg">Informasi Bangunan</CardTitle>
+          <CardTitle className="text-base md:text-lg">
+            Informasi Bangunan
+          </CardTitle>
           <CardDescription className="text-xs">Selected item</CardDescription>
         </div>
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 -mr-2 -mt-2"
+          className="h-8 w-8 -mr-1 -mt-1 md:-mr-2 md:-mt-2"
           onClick={() => setSelectedFeature(null)}
           title="Tutup"
         >
           <X size={20} />
         </Button>
       </CardHeader>
-      <CardContent className="p-4 pt-0">
+      <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
         <Tabs defaultValue="detail" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 h-9 mb-3">
+          <TabsList className="grid w-full grid-cols-2 h-9 mb-2 md:mb-3">
             <TabsTrigger value="detail">Detail Fitur</TabsTrigger>
             <TabsTrigger value="analisis">Analisis</TabsTrigger>
           </TabsList>
 
           <TabsContent
             value="detail"
-            className="space-y-1 text-sm max-h-[60vh] overflow-y-auto pr-1"
+            className="space-y-0.5 text-sm max-h-[55vh] md:max-h-[60vh] overflow-y-auto pr-1"
           >
             {properties ? (
               displayablePropertiesOrder.map(({ label, key }) => {
