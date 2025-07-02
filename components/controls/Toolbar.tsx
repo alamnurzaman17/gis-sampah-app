@@ -8,7 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Plus, Minus, Map, LocateFixed } from "lucide-react";
+import { Plus, Minus, Map, MapPin } from "lucide-react";
 import { useMapStore } from "@/store/mapStore";
 import {
   availableBasemaps,
@@ -69,7 +69,7 @@ export function Toolbar() {
           onClick={handleGoToHome}
           className="rounded-none cursor-pointer"
         >
-          <LocateFixed size={18} />
+          <MapPin size={18} />
         </Button>
 
         {/* Separator */}

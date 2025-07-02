@@ -9,12 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import LegendDisplay from "../panel/LegendDisplay";
-import {
-  Plus,
-  Minus,
-  Layers, // Ikon baru yang lebih cocok untuk tombol utama
-  LocateFixed,
-} from "lucide-react";
+import { Layers, MapPin } from "lucide-react";
 import { useMapStore } from "@/store/mapStore";
 import {
   availableBasemaps,
@@ -76,16 +71,8 @@ export function MobileToolbar() {
     setIsPopoverOpen(false); // Tutup setelah aksi
   };
 
-  const handleZoomIn = () => {
-    map.zoomIn();
-  };
-
-  const handleZoomOut = () => {
-    map.zoomOut();
-  };
-
   return (
-    <div className="absolute top-20 right-4 z-[1001]">
+    <div>
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         {/* Tombol Aksi Utama */}
         <PopoverTrigger asChild>
@@ -99,42 +86,28 @@ export function MobileToolbar() {
         </PopoverTrigger>
 
         {/* Konten Popover yang berisi semua alat */}
-        <PopoverContent className="w-auto p-2" align="end">
+        <PopoverContent className="w-auto p-2 z-[1002]" align="end">
           <div className="flex flex-col space-y-2">
-            {/* 1. Kontrol Zoom */}
-            <div className="flex items-center justify-center space-x-1">
-              <Button variant="outline" size="icon" onClick={handleZoomOut}>
-                <Minus size={18} />
-              </Button>
-              <span className="px-2 text-sm text-muted-foreground">Zoom</span>
-              <Button variant="outline" size="icon" onClick={handleZoomIn}>
-                <Plus size={18} />
-              </Button>
-            </div>
-
-            {/* Garis Pemisah */}
-            <div className="h-px bg-border w-full"></div>
-
-            {/* 2. Tombol Kembali ke Awal */}
+            {/* 1. Tombol Kembali ke Awal */}
             <Button
               variant="ghost"
               className="w-full justify-start"
               onClick={handleGoToHome}
             >
-              <LocateFixed className="mr-2 h-4 w-4" />
+              <MapPin className="mr-2 h-4 w-4" />
               <span>Kembali ke Awal</span>
             </Button>
 
             {/* Garis Pemisah */}
             <div className="h-px bg-border w-full"></div>
 
-            {/* 3. Legenda Peta */}
+            {/* 2. Legenda Peta */}
             <LegendDisplay showCard={false} />
 
             {/* Garis Pemisah */}
             <div className="h-px bg-border w-full"></div>
 
-            {/* 4. Pilihan Basemap */}
+            {/* 3. Pilihan Basemap */}
             <div className="px-1">
               <h4 className="font-medium text-sm mb-2">Pilih Basemap</h4>
               <BasemapPicker onSelect={handleBasemapChange} />

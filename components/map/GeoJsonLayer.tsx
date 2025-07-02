@@ -90,7 +90,7 @@ const GeoJsonLayer = () => {
       data={geoJsonData}
       style={styleFunction}
       onEachFeature={onEachFeature}
-      key={activeSampahType} // Ini SANGAT PENTING untuk memaksa Leaflet menggambar ulang style
+      key={activeSampahType}
     />
   );
 };
