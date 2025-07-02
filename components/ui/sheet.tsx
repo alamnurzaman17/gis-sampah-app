@@ -29,25 +29,6 @@ function SheetPortal({
   return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />;
 }
 
-// --- LAKUKAN SEMUA PERUBAHAN DI SINI ---
-
-// SheetOverlay tidak kita gunakan jika modal={false}, jadi biarkan saja.
-function SheetOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
-  return (
-    <SheetPrimitive.Overlay
-      data-slot="sheet-overlay"
-      className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50",
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
 // Ubah SheetContent secara signifikan
 function SheetContent({
   className,
@@ -59,7 +40,6 @@ function SheetContent({
 }) {
   return (
     <SheetPortal>
-      {/* Kita tidak render SheetOverlay di sini agar tidak ada background full-screen saat modal=false */}
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
