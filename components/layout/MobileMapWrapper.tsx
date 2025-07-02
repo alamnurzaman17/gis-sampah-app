@@ -60,7 +60,7 @@ export default function MobileMapWrapper() {
 
         {selectedFeature && (
           <div className="absolute inset-0 z-[1001] flex items-center justify-center pointer-events-none">
-            <BuildingInfo />
+            <BuildingInfo isMobileLayout={true} />
           </div>
         )}
       </main>

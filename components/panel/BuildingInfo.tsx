@@ -16,6 +16,7 @@ import { X } from "lucide-react";
 
 // --- Impor komponen analisis baru ---
 import AnalysisTabContent from "./AnalysisTabContent";
+import { cn } from "@/lib/utils";
 
 type DisplayProperty = {
   label: string;
@@ -48,19 +49,25 @@ const formatPropertyValue = (
   return String(value);
 };
 
+interface BuildingInfoProps {
+  isMobileLayout?: boolean;
+}
+
 interface PropertyRowProps {
   label: string;
   value: string;
 }
 
 const PropertyRow: React.FC<PropertyRowProps> = ({ label, value }) => (
-  <div className="flex justify-between items-center py-1 px-1.5 md:py-1.5 md:px-2 border-b border-border/50 text-xs md:text-sm">
+  <div className="flex justify-between items-center py-1 px-1.5 border-b border-border/50 text-xs">
     <span className="text-muted-foreground">{label}</span>
     <span className="font-medium text-right text-green-600">{value}</span>
   </div>
 );
 
-export default function BuildingInfo() {
+export default function BuildingInfo({
+  isMobileLayout = false,
+}: BuildingInfoProps) {
   const { selectedFeature, setSelectedFeature } = useMapStore();
 
   if (!selectedFeature) {
@@ -70,10 +77,20 @@ export default function BuildingInfo() {
   const properties = selectedFeature.properties;
 
   return (
-    <Card className="w-[300px] md:w-[380px] max-w-md shadow-2xl bg-card/95 backdrop-blur-sm pointer-events-auto">
-      <CardHeader className="flex flex-row items-center justify-between px-3 py-2 md:px-4 md:py-3">
+    <Card
+      className={cn(
+        "shadow-2xl bg-card/95 backdrop-blur-sm pointer-events-auto",
+        isMobileLayout ? "w-full max-w-[280px]" : "w-[380px]"
+      )}
+    >
+      <CardHeader
+        className={cn(
+          "flex flex-row items-center justify-between",
+          isMobileLayout ? "px-3 py-2" : "px-4 py-3"
+        )}
+      >
         <div>
-          <CardTitle className="text-base md:text-lg">
+          <CardTitle className={cn(isMobileLayout ? "text-base" : "text-lg")}>
             Informasi Bangunan
           </CardTitle>
           <CardDescription className="text-xs">Selected item</CardDescription>
@@ -81,23 +98,34 @@ export default function BuildingInfo() {
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 -mr-1 -mt-1 md:-mr-2 md:-mt-2"
+          className={cn(
+            "h-8 w-8",
+            isMobileLayout ? "-mr-1 -mt-1" : "-mr-2 -mt-2"
+          )}
           onClick={() => setSelectedFeature(null)}
           title="Tutup"
         >
           <X size={20} />
         </Button>
       </CardHeader>
-      <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
+      <CardContent className={cn(isMobileLayout ? "p-2 pt-0" : "p-4 pt-0")}>
         <Tabs defaultValue="detail" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 h-9 mb-2 md:mb-3">
+          <TabsList
+            className={cn(
+              "grid w-full grid-cols-2 h-9",
+              isMobileLayout ? "mb-2" : "mb-3"
+            )}
+          >
             <TabsTrigger value="detail">Detail Fitur</TabsTrigger>
             <TabsTrigger value="analisis">Analisis</TabsTrigger>
           </TabsList>
 
           <TabsContent
             value="detail"
-            className="space-y-0.5 text-sm max-h-[55vh] md:max-h-[60vh] overflow-y-auto pr-1"
+            className={cn(
+              "space-y-0.5 text-sm overflow-y-auto pr-1",
+              isMobileLayout ? "max-h-[55vh]" : "max-h-[60vh]"
+            )}
           >
             {properties ? (
               displayablePropertiesOrder.map(({ label, key }) => {
@@ -114,10 +142,12 @@ export default function BuildingInfo() {
             )}
           </TabsContent>
 
-          {/* --- PERUBAHAN DI SINI --- */}
           <TabsContent value="analisis">
             {properties ? (
-              <AnalysisTabContent properties={properties} />
+              <AnalysisTabContent
+                properties={properties}
+                isMobile={isMobileLayout}
+              />
             ) : (
               <div className="flex items-center justify-center h-24">
                 <p className="text-muted-foreground">

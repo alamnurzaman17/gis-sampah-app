@@ -1,14 +1,14 @@
-// src/components/panel/AnalysisTabContent.tsx
-
 "use client";
 
 import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import type { BuildingProperties } from "@/types";
+import { cn } from "@/lib/utils";
 
 // Tipe untuk props komponen (tidak berubah)
 interface AnalysisTabContentProps {
   properties: BuildingProperties;
+  isMobile?: boolean; // Prop untuk mode mobile
 }
 
 // Tipe untuk data chart kita (tidak berubah)
@@ -29,8 +29,8 @@ const formatNumber = (num: number) => num.toLocaleString("id-ID");
 
 export default function AnalysisTabContent({
   properties,
+  isMobile = false, // Default ke false jika tidak disediakan
 }: AnalysisTabContentProps) {
-  // --- INI ADALAH PERBAIKAN UTAMA ---
   // Kita memastikan setiap objek yang dibuat oleh .map() langsung sesuai dengan ChartDataItem
   const chartData: ChartDataItem[] = analysisCategories.map((category) => {
     const value = properties[category.key];
@@ -51,17 +51,27 @@ export default function AnalysisTabContent({
   const sampahTerbanyak = sortedData[0];
 
   return (
-    <div className="flex flex-col items-center space-y-4 pt-4">
-      <div className="flex w-full items-center justify-center space-x-8">
-        <div className="relative h-48 w-48">
+    <div className="flex flex-col items-center space-y-3 pt-2 md:space-y-4 md:pt-4">
+      <div
+        className={cn(
+          "flex w-full items-center justify-center",
+          isMobile ? "flex-col space-y-3" : "space-x-8" // Vertikal di mobile, horizontal di desktop
+        )}
+      >
+        <div
+          className={cn(
+            "relative",
+            isMobile ? "h-36 w-36" : "h-48 w-48" // Lebih kecil di mobile
+          )}
+        >
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={80}
+                innerRadius={isMobile ? 45 : 60}
+                outerRadius={isMobile ? 60 : 80}
                 fill="#8884d8"
                 paddingAngle={5}
                 dataKey="value"
@@ -76,24 +86,40 @@ export default function AnalysisTabContent({
             </PieChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <p className="text-3xl font-bold">{formatNumber(totalSampah)}</p>
-            <p className="text-sm text-muted-foreground">kg per hari</p>
+            <p className={cn("font-bold", isMobile ? "text-2xl" : "text-3xl")}>
+              {formatNumber(totalSampah)}
+            </p>
+            <p
+              className={cn(
+                "text-muted-foreground",
+                isMobile ? "text-xs" : "text-sm"
+              )}
+            >
+              kg per hari
+            </p>
           </div>
         </div>
-        <div className="space-y-2">
+        <div
+          className={cn(
+            "flex",
+            isMobile ? "flex-row space-x-4" : "flex-col space-y-2" // Horizontal di mobile
+          )}
+        >
           {analysisCategories.map((category) => (
             <div key={category.name} className="flex items-center space-x-2">
               <div
                 className="h-3 w-3 rounded-full"
                 style={{ backgroundColor: category.color }}
               />
-              <span className="text-sm">{category.name}</span>
+              <span className={cn(isMobile ? "text-xs" : "text-sm")}>
+                {category.name}
+              </span>
             </div>
           ))}
         </div>
       </div>
 
-      <p className="text-center text-sm text-muted-foreground max-w-xs pt-4">
+      <p className="text-center text-xs md:text-sm text-muted-foreground max-w-xs pt-2 md:pt-4">
         {sampahTerbanyak && sampahTerbanyak.value > 0 ? (
           <>
             Estimasi sampah{" "}

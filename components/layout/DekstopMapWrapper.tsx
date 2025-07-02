@@ -104,7 +104,7 @@ export default function DekstopMapWrapper() {
               Container memiliki 'pointer-events-none' agar peta bisa digeser.
               Komponen BuildingInfo sendiri memiliki 'pointer-events-auto' agar bisa diklik.
             */}
-            <BuildingInfo />
+            <BuildingInfo isMobileLayout={false} />
           </div>
         )}
         {/* --- AKHIR DARI BAGIAN KARTU MENGAMBANG --- */}
