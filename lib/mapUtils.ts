@@ -11,12 +11,12 @@ export const DEFAULT_FLY_TO_ZOOM = 15;
 export const sampahColorRanges: Record<SampahType, LegendItem[]> = {
   // Palet Ungu untuk Estimasi (Tajam dan Netral)
   // Klasifikasi baru: 4 kelas berdasarkan NaturalBreaks (batas: 12, 15, 20, 25)
-  Estimasi: [
-    { color: "#f3e8ff", label: "<= 12" }, // Sangat Rendah
-    { color: "#d8b4fe", label: "> 12 - 15" }, // Rendah
-    { color: "#a855f7", label: "> 15 - 20" }, // Sedang
-    { color: "#9333ea", label: "> 20 - 25" }, // Tinggi
-  ],
+  // Estimasi: [
+  //   { color: "#f3e8ff", label: "<= 12" }, // Sangat Rendah
+  //   { color: "#d8b4fe", label: "> 12 - 15" }, // Rendah
+  //   { color: "#a855f7", label: "> 15 - 20" }, // Sedang
+  //   { color: "#9333ea", label: "> 20 - 25" }, // Tinggi
+  // ],
   // Palet Biru untuk Sampah Plastik (Kontras Tinggi)
   // Klasifikasi baru: 4 kelas berdasarkan NaturalBreaks (batas: 12, 17, 22, 25)
   "Sampah Plastik (kg)": [
@@ -51,13 +51,13 @@ export function getColorForValue(
   const ranges = sampahColorRanges[type];
   if (typeof value !== "number" || !ranges) return "#CCCCCC"; // Warna default jika nilai tidak valid atau tipe tidak dikenal
 
-  if (type === "Estimasi") {
-    if (value <= 12) return ranges[0].color;
-    if (value <= 15) return ranges[1].color;
-    if (value <= 20) return ranges[2].color;
-    if (value <= 25) return ranges[3].color;
-    return ranges[ranges.length - 1].color; // Untuk nilai di atas batas tertinggi
-  }
+  // if (type === "Estimasi") {
+  //   if (value <= 12) return ranges[0].color;
+  //   if (value <= 15) return ranges[1].color;
+  //   if (value <= 20) return ranges[2].color;
+  //   if (value <= 25) return ranges[3].color;
+  //   return ranges[ranges.length - 1].color; // Untuk nilai di atas batas tertinggi
+  // }
   if (type === "Sampah Plastik (kg)") {
     if (value <= 12) return ranges[0].color;
     if (value <= 17) return ranges[1].color;

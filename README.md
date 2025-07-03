@@ -1,5 +1,7 @@
 # GisSampah App - Aplikasi Pemetaan Sampah Responsif.
 
+Sebuah platform pemetaan interaktif yang dibangun dengan Next.js dan Leaflet untuk memvisualisasikan dan menganalisis data sampah secara spasial. Aplikasi ini menyediakan antarmuka yang bersih, modern, dan sepenuhnya responsif untuk perangkat desktop maupun mobile.
+
 |                         Tampilan Desktop                          |                         Tampilan Mobile                         |
 | :---------------------------------------------------------------: | :-------------------------------------------------------------: |
 | ![Screenshot Desktop](./public/Screenshot/screenshot-desktop.png) | ![Screenshot Mobile](./public/Screenshot/screenshot-mobile.png) |
@@ -8,22 +10,23 @@
 
 ## ✨ Fitur Utama
 
-- **Desain Responsif (Mobile-First)**: Antarmuka yang dioptimalkan sepenuhnya, memberikan pengalaman pengguna yang berbeda dan intuitif di perangkat desktop dan mobile.
-- **Peta Interaktif**: Tampilan peta yang mulus dan cepat menggunakan Leaflet.js dan React-Leaflet.
-- **Visualisasi Data Dinamis**: Data GeoJSON diwarnai secara dinamis berdasarkan atribut yang dipilih (Estimasi, Sampah Plastik, Organik, dll.).
-- **Pencarian Lokasi Geografis**: Mencari nama tempat atau alamat di seluruh dunia menggunakan API Nominatim, dengan saran autocomplete dan debounce untuk performa optimal.
-- **Manajemen State Terpusat**: Menggunakan Zustand untuk state management yang efisien dan mudah diakses di seluruh komponen.
-- **Kontrol Layer & Legenda Dinamis**: Menampilkan/menyembunyikan layer data dan legenda peta yang otomatis beradaptasi dengan visualisasi aktif.
-- **Toolbar Peta Adaptif**:
-  - **Desktop**: Toolbar vertikal yang ringkas untuk Zoom, Kembali ke Posisi Awal, dan Pilihan Basemap.
-  - **Mobile**: Tombol aksi utama yang membuka `Popover` berisi semua alat peta, menghemat ruang layar.
-- **Sidebar Cerdas**:
-  - **Desktop**: Sidebar statis yang dapat disembunyikan.
-  - **Mobile**: Sidebar "drawer" yang muncul dari samping dengan backdrop gelap.
-- **Panel Informasi Detail**: Menampilkan informasi rinci dari poligon yang diklik dalam kartu (card) yang mengambang di tengah layar.
-- **Tema Peta & Styling Dinamis**:
-  - Beralih dengan mulus antara tema peta Light, Dark, dan Satellite.
-  - Border poligon secara otomatis berubah menjadi putih pada tema gelap untuk kontras maksimal.
+- **Desain Sepenuhnya Responsif**: Antarmuka yang dioptimalkan untuk memberikan pengalaman pengguna yang intuitif di perangkat desktop (dengan sidebar) dan mobile (dengan panel geser dan toolbar ringkas).
+- **Peta Interaktif & Cepat**: Dibangun di atas Leaflet.js dan React-Leaflet untuk rendering peta yang mulus.
+- **Visualisasi Data Tematik**: Data GeoJSON diwarnai secara dinamis berdasarkan klasifikasi _Natural Breaks (Jenks)_ untuk berbagai atribut (volume sampah, luas area, dll.), memastikan representasi data yang akurat secara statistik.
+- **Analisis Spasial Radius**:
+  - Secara otomatis melakukan analisis pada bangunan di sekitar titik yang diklik.
+  - Visualisasi radius di peta dengan lingkaran dan highlight pada bangunan yang masuk dalam radius.
+  - Menampilkan ringkasan statistik (jumlah bangunan, sebaran data) dalam bentuk chart donat di sidebar.
+  - Radius dapat diubah secara interaktif menggunakan slider.
+- **Manajemen State Terpusat**: Menggunakan **Zustand** untuk state management yang efisien, reaktif, dan mudah diakses di seluruh komponen.
+- **Pencarian Lokasi Geografis**: Mencari alamat atau nama tempat menggunakan API Nominatim, dilengkapi saran autocomplete dan _debounce_ untuk performa optimal.
+- **Kontrol Peta Adaptif**:
+  - **Desktop**: Toolbar vertikal ringkas untuk Zoom, Kembali ke Posisi Awal, dan Pilihan Basemap.
+  - **Mobile**: Kontrol zoom terpisah dan tombol aksi utama yang membuka `Popover` berisi sisa alat peta, menghemat ruang layar.
+- **Panel Informasi Detail**: Menampilkan informasi rinci dari poligon yang diklik dalam kartu yang mengambang di tengah layar, dengan tab untuk detail dan analisis awal.
+- **Styling & Tema Dinamis**:
+  - Beralih dengan mulus antara tema peta **Light, Dark, dan Satellite**.
+  - Border poligon secara otomatis berubah warna untuk kontras maksimal di setiap tema.
 - **Indikator Skala Kustom**: Menampilkan skala peta (misal, "50 m") dalam format teks minimalis, tanpa elemen grafis yang mengganggu.
 
 ---
@@ -47,20 +50,21 @@ Proyek ini menggunakan struktur direktori root untuk kejelasan, memisahkan logik
 
 ```
 gissampah-app/
-├── app/ # Direktori utama Next.js App Router (halaman dan layout)
+├── app/ # Halaman dan layout utama (Next.js App Router)
 ├── components/
-│ ├── controls/ # Kontrol peta (Toolbar, LayerControl, ScaleControl)
-│ ├── layout/ # Komponen layout utama (Desktop/Mobile Wrappers, Header, Sidebar)
-│ ├── map/ # Komponen inti peta (MapDisplay, GeoJsonLayer, ChangeView)
-│ ├── panel/ # Komponen panel informasi (BuildingInfo, LegendDisplay)
+│ ├── controls/ # Kontrol peta (Toolbar, LayerControl, ZoomControl, dll.)
+│ ├── layout/ # Komponen layout utama (Wrappers, Header, Sidebar)
+│ ├── map/ # Komponen inti peta (MapDisplay, GeoJsonLayer, AnalysisCircle)
+│ ├── panel/ # Komponen panel informasi (BuildingInfo, LegendDisplay, RadiusAnalysisPanel)
 │ └── ui/ # Komponen dari shadcn/ui
 ├── hooks/ # Hooks kustom React (useDebounce, useBreakpoint)
-├── lib/ # Fungsi utilitas (mapUtils.ts, utils.ts)
+├── lib/ # Fungsi utilitas (mapUtils.ts untuk klasifikasi & warna)
 ├── public/
-│ ├── data/ # Tempat penyimpanan file GeoJSON
+│ ├── data/ # File sumber GeoJSON
+│ ├── Screenshot/ # Screenshot untuk README
 │ └── images/ # Gambar thumbnail untuk basemap
 ├── store/ # State management global (Zustand: mapStore.ts)
-├── styles/ # File CSS kustom (misal: untuk override style Leaflet)
+├── styles/ # File CSS kustom (untuk override style Leaflet)
 ├── types/ # Definisi tipe TypeScript global (index.ts)
 └── ... # File konfigurasi (next.js, tailwind, postcss, dll.)
 ```
