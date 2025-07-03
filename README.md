@@ -2,9 +2,9 @@
 
 Sebuah platform pemetaan interaktif yang dibangun dengan Next.js dan Leaflet untuk memvisualisasikan dan menganalisis data sampah secara spasial. Aplikasi ini menyediakan antarmuka yang bersih, modern, dan sepenuhnya responsif untuk perangkat desktop maupun mobile.
 
-|                         Tampilan Desktop                          |                         Tampilan Mobile                         |
-| :---------------------------------------------------------------: | :-------------------------------------------------------------: |
-| ![Screenshot Desktop](./public/Screenshot/screenshot-desktop.png) | ![Screenshot Mobile](./public/Screenshot/screenshot-mobile.png) |
+|                         Tampilan Desktop                         |                        Tampilan Mobile                         |
+| :--------------------------------------------------------------: | :------------------------------------------------------------: |
+| ![Screenshot Desktop](./public/Screenshot/DekstopScreenshot.png) | ![Screenshot Mobile](./public/Screenshot/MobileScreenshot.png) |
 
 ---
 
