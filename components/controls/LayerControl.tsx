@@ -1,6 +1,6 @@
+// components/controls/LayerControl.tsx
 "use client";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-
 import { useMapStore } from "@/store/mapStore";
 import type { SampahType } from "@/types";
+import RadiusAnalysisPanel from "../panel/RadiusAnalysisPanel"; // <-- IMPORT BARU
 
 function LayerControl() {
   const {
@@ -24,9 +24,8 @@ function LayerControl() {
 
   return (
     <Card className="w-full">
-      <CardHeader className=" px-4 border-b">
-        {/* Kontrol untuk Data Dummy/Bangunan */}
-        <CardTitle className="flex items-center justify-between h-0">
+      <CardHeader className="p-4 border-b">
+        <div className="flex items-center justify-between">
           <Label
             htmlFor="data-dummy"
             className="text-sm font-medium cursor-pointer"
@@ -37,11 +36,10 @@ function LayerControl() {
             id="data-dummy"
             checked={isDataLayerVisible}
             onCheckedChange={toggleDataLayerVisibility}
-            className="cursor-pointer"
           />
-        </CardTitle>
+        </div>
       </CardHeader>
-      <CardContent className="px-3 space-y-2">
+      <CardContent className="p-4 space-y-2">
         <div>
           <Label
             htmlFor="sampah-type-select"
@@ -66,9 +64,13 @@ function LayerControl() {
               <SelectItem value="sampah Anorganik (kg)">
                 Sampah Lainnya
               </SelectItem>
+              {/* <SelectItem value="Estimasi">Estimasi</SelectItem> */}
             </SelectContent>
           </Select>
         </div>
+
+        {/* --- PANEL ANALISIS RADIUS DITEMPATKAN DI SINI --- */}
+        <RadiusAnalysisPanel />
       </CardContent>
     </Card>
   );

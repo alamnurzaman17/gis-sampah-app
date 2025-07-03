@@ -1,4 +1,3 @@
-// types/index.ts
 import {
   Feature as GeoJsonFeatureType,
   MultiPolygon,
@@ -44,10 +43,8 @@ export interface BasemapConfig {
 }
 
 export type SampahType =
-  | "Estimasi"
-  | "Sampah Plastik (kg)"
-  | "Sampah Organik (kg)"
-  | "sampah Anorganik (kg)";
+  // | "Estimasi"
+  "Sampah Plastik (kg)" | "Sampah Organik (kg)" | "sampah Anorganik (kg)";
 
 export interface LegendItem {
   color: string;
@@ -70,6 +67,18 @@ export interface GeocodingResult {
   icon?: string;
 }
 
+// --- Tipe baru untuk Analisis Radius ---
+export interface GroupedStat {
+  rangeLabel: string;
+  color: string;
+  count: number;
+}
+
+export interface RadiusAnalysisStats {
+  totalCount: number;
+  groupedStats: GroupedStat[];
+}
+
 //  TIPE UNTUK STATE GLOBAL (ZUSTAND STORE)
 export interface MapStoreState {
   // Data & Layer
@@ -87,6 +96,17 @@ export interface MapStoreState {
   searchResultCenter: LatLngExpression | null;
   geocodingSuggestions: GeocodingResult[]; // Untuk menyimpan saran autocomplete
   isGeocodingLoading: boolean; // Untuk menampilkan indikator loading
+
+  // Analisis Radius
+  isRadiusAnalysisActive: boolean;
+  analysisRadius: number;
+  featuresInRadius: AppSpecificBuildingFeature[];
+  radiusAnalysisStats: RadiusAnalysisStats | null;
+
+  // Aksi Analisis Radius
+  setAnalysisRadius: (radius: number) => void;
+  runRadiusAnalysis: () => void;
+  clearRadiusAnalysis: () => void;
 
   // Aksi (Metode untuk mengubah state)
   setGeoJsonData: (data: AppFeatureCollection | null) => void;

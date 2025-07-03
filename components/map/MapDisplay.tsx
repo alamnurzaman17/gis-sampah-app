@@ -16,6 +16,7 @@ import { MobileToolbar } from "../controls/MobileToolbar"; // Versi Mobile
 import { useBreakpoint } from "@/hooks/use-breakpoint"; // Hook kita
 import { CustomScale } from "../controls/CustomScale";
 import { ZoomControl } from "../controls/ZoomControl";
+import { AnalysisCircle } from "./AnalysisCircle";
 
 interface MapDisplayProps {
   onMapCreated: (map: LeafletMap) => void;
@@ -50,6 +51,8 @@ const MapDisplay: React.FC<MapDisplayProps> = ({ onMapCreated }) => {
 
       {/* Komponen ini akan mendeteksi perubahan pada `searchResultCenter` dan memicu `flyTo` */}
       <ChangeView center={searchResultCenter} zoom={DEFAULT_FLY_TO_ZOOM} />
+
+      <AnalysisCircle />
 
       {isMobile ? (
         // Untuk Mobile: Buat kontainer flex vertikal

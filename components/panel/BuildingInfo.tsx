@@ -26,7 +26,7 @@ type DisplayProperty = {
 const displayablePropertiesOrder: ReadonlyArray<DisplayProperty> = [
   { label: "ID", key: "Id" },
   { label: "RT", key: "RTNew" },
-  { label: "Estimasi", key: "Estimasi" },
+  // { label: "Estimasi", key: "Estimasi" },
   { label: "Sampah Plastik (kg)", key: "Sampah Plastik (kg)" },
   { label: "Sampah Organik (kg)", key: "Sampah Organik (kg)" },
   { label: "Sampah Anorganik (kg)", key: "sampah Anorganik (kg)" },
