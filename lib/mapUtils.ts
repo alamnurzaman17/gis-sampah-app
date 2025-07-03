@@ -7,91 +7,80 @@ export const DEFAULT_MAP_ZOOM = 17;
 export const DEFAULT_FLY_TO_ZOOM = 15;
 
 // --- PALET WARNA BARU DITERAPKAN DI SINI ---
-// Struktur dan label dipertahankan, hanya nilai 'color' yang diubah.
+// Struktur dan label dipertahankan, hanya nilai 'color' dan jumlah kelas yang diubah
 export const sampahColorRanges: Record<SampahType, LegendItem[]> = {
   // Palet Ungu untuk Estimasi (Tajam dan Netral)
+  // Klasifikasi baru: 4 kelas berdasarkan NaturalBreaks (batas: 12, 15, 20, 25)
   Estimasi: [
-    { color: "#f3e8ff", label: "0 - 25" },
-    { color: "#d8b4fe", label: "26 - 50" },
-    { color: "#a855f7", label: "51 - 75" },
-    { color: "#9333ea", label: "76 - 100" },
-    { color: "#7e22ce", label: "101 - 150" },
-    { color: "#6b21a8", label: "151 - 200" },
-    { color: "#581c87", label: "201 - 300" },
-    { color: "#3b0764", label: "> 300" },
+    { color: "#f3e8ff", label: "<= 12" }, // Sangat Rendah
+    { color: "#d8b4fe", label: "> 12 - 15" }, // Rendah
+    { color: "#a855f7", label: "> 15 - 20" }, // Sedang
+    { color: "#9333ea", label: "> 20 - 25" }, // Tinggi
   ],
   // Palet Biru untuk Sampah Plastik (Kontras Tinggi)
+  // Klasifikasi baru: 4 kelas berdasarkan NaturalBreaks (batas: 12, 17, 22, 25)
   "Sampah Plastik (kg)": [
-    { color: "#00ffff", label: "0 - 20 kg" },
-    { color: "#00bfff", label: "20 - 40 kg" },
-    { color: "#009fff", label: "40 - 60 kg" },
-    { color: "#0080ff", label: "60 - 80 kg" },
-    { color: "#0060ff", label: "> 80 kg" },
+    { color: "#edf8fb", label: "<= 12 kg" }, // Sangat Rendah
+    { color: "#b2e2e2", label: "> 12 - 17 kg" }, // Rendah
+    { color: "#66c2a4", label: "> 17 - 22 kg" }, // Sedang
+    { color: "#238b45", label: "> 22 - 25 kg" }, // Tinggi
   ],
   // Palet Hijau Zamrud untuk Sampah Organik (Lebih Kaya dan Jelas)
+  // Klasifikasi baru: 3 kelas berdasarkan NaturalBreaks (batas: 5, 9, 12)
   "Sampah Organik (kg)": [
-    { color: "#9080ff", label: "0 - 20 kg" },
-    { color: "#776bcd", label: "20.1 - 40 kg" },
-    { color: "#5e569b", label: "40.1 - 60 kg" },
-    { color: "#48446e", label: "60.1 - 80 kg" },
-    { color: "#363445", label: "> 80 kg" },
+    { color: "#9080ff", label: "<= 5 kg" }, // Sangat Rendah
+    { color: "#776bcd", label: "> 5 - 9 kg" }, // Rendah
+    { color: "#5e569b", label: "> 9 - 12 kg" }, // Sedang
   ],
   // Palet Oranye/Coklat untuk Sampah Anorganik (Berbeda dan Jelas)
+  // Klasifikasi baru: 3 kelas berdasarkan NaturalBreaks (batas: 2, 3, 8)
   "sampah Anorganik (kg)": [
-    { color: "#ffb400", label: "0 - 10 kg" },
-
-    { color: "#d2980d", label: "10.1 - 20 kg" },
-
-    { color: "#a57c1b", label: "20.1 - 30 kg" },
-
-    { color: "#786028", label: "30.1 - 40 kg" },
-
-    { color: "#363445", label: "> 40 kg" },
+    // Menggunakan 'sampah' huruf kecil sesuai kunci yang ada
+    { color: "#fdcc8a", label: "<= 2 kg" }, // Sangat Rendah
+    { color: "#fc8d59", label: "> 2 - 3 kg" }, // Rendah
+    { color: "#d7301f", label: "> 3 - 8 kg" }, // Sedang
   ],
 };
 
-// Fungsi helper (Tidak Diubah)
-// Logika ini tetap valid dan akan bekerja dengan warna baru secara otomatis.
+// Fungsi helper (Diubah sesuai klasifikasi baru)
+// Logika ini telah disesuaikan dengan batas kelas NaturalBreaks yang baru.
 export function getColorForValue(
   value: number | undefined,
   type: SampahType
 ): string {
   const ranges = sampahColorRanges[type];
-  if (typeof value !== "number" || !ranges) return "#CCCCCC";
+  if (typeof value !== "number" || !ranges) return "#CCCCCC"; // Warna default jika nilai tidak valid atau tipe tidak dikenal
 
   if (type === "Estimasi") {
-    if (value <= 25) return ranges[0].color;
-    if (value <= 50) return ranges[1].color;
-    if (value <= 75) return ranges[2].color;
-    if (value <= 100) return ranges[3].color;
-    if (value <= 150) return ranges[4].color;
-    if (value <= 200) return ranges[5].color;
-    if (value <= 300) return ranges[6].color;
-    return ranges[7].color;
+    if (value <= 12) return ranges[0].color;
+    if (value <= 15) return ranges[1].color;
+    if (value <= 20) return ranges[2].color;
+    if (value <= 25) return ranges[3].color;
+    return ranges[ranges.length - 1].color; // Untuk nilai di atas batas tertinggi
   }
   if (type === "Sampah Plastik (kg)") {
-    if (value <= 20) return ranges[0].color;
-    if (value <= 40) return ranges[1].color;
-    if (value <= 60) return ranges[2].color;
-    if (value <= 80) return ranges[3].color;
-    return ranges[4].color;
+    if (value <= 12) return ranges[0].color;
+    if (value <= 17) return ranges[1].color;
+    if (value <= 22) return ranges[2].color;
+    if (value <= 25) return ranges[3].color;
+    return ranges[ranges.length - 1].color; // Untuk nilai di atas batas tertinggi
   }
   if (type === "Sampah Organik (kg)") {
-    if (value <= 20) return ranges[0].color;
-    if (value <= 40) return ranges[1].color;
-    if (value <= 60) return ranges[2].color;
-    if (value <= 80) return ranges[3].color;
-    return ranges[4].color;
+    if (value <= 5) return ranges[0].color;
+    if (value <= 9) return ranges[1].color;
+    if (value <= 12) return ranges[2].color;
+    return ranges[ranges.length - 1].color; // Untuk nilai di atas batas tertinggi
   }
   if (type === "sampah Anorganik (kg)") {
-    if (value <= 10) return ranges[0].color;
-    if (value <= 20) return ranges[1].color;
-    if (value <= 30) return ranges[2].color;
-    if (value <= 40) return ranges[3].color;
-    return ranges[4].color;
+    // Menggunakan 'sampah' huruf kecil
+    if (value <= 2) return ranges[0].color;
+    if (value <= 3) return ranges[1].color;
+    if (value <= 8) return ranges[2].color;
+    return ranges[ranges.length - 1].color; // Untuk nilai di atas batas tertinggi
   }
 
-  return ranges[ranges.length - 1]?.color || "#CCCCCC";
+  // Fallback jika tipe tidak cocok dengan klasifikasi yang ada
+  return "#CCCCCC";
 }
 
 // Konfigurasi Basemap (Tidak Diubah)
